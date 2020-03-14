@@ -7,6 +7,11 @@ set-strictMode -version 2
 
 function upload-file-to-github-repo($localPath, $localFilename, $repoPath, $repoFilename, $repoName, $repoOwner, $message, $token) {
    #
+   #   Note:
+   #     $repoPath must (currently) not start with a slash. 
+   #
+
+   #
    #      File content must be represented in base 64
    #
 
