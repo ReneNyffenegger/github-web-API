@@ -9,7 +9,15 @@ function upload-file-to-github-repo($localPath, $localFilename, $repoPath, $repo
    #
    #      File content must be represented in base 64
    #
-   $base64 = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$localPath/$localFilename"))
+
+   $localFileAbsolutePath = resolve-path "$localPath/$localFilename"
+
+   if (! (test-path $localFileAbsolutePath)) {
+      "$localFileAbsolutePath does not exist"
+       return
+   }
+
+   $base64 = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes($localFileAbsolutePath))
 
    $url = "https://api.github.com/repos/$repoOwner/$repoName/contents/$repoPath/$repoFilename"
 
@@ -37,6 +45,10 @@ function upload-file-to-github-repo($localPath, $localFilename, $repoPath, $repo
 
         $body = '{{"message": "{0}", "content": "{1}" }}' -f $message, $base64
 
+     #
+     #  TODO: of course, if the url $url does not exist on the webserver,
+     #  the following invocation fails.
+     #
         $response = invoke-webrequest $url                                               `
           -method          PUT                                                           `
           -contentType     application/json                                              `
